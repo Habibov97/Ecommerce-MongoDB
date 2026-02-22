@@ -4,15 +4,20 @@ const cors = require('cors');
 const path = require('path');
 const dbConnect = require('./config/database');
 const globalErrorMiddleware = require('./middlewares/globalError.middleware');
+const router = require('./routes/index');
 
 const app = express();
 
 app.use(express.json());
 app.use(cors());
-const staticPath = path.join(__dirname, '../public');
-app.use(express.static(staticPath));
+const publicPath = path.join(__dirname, '../public');
+app.use(express.static(publicPath));
 
-// app.get('/api', router);
+app.use('/api', router);
+
+app.use((req, res) => {
+  res.json({ message: `inserted url is invalid: ${req.originalUrl}` });
+});
 
 app.use(globalErrorMiddleware);
 

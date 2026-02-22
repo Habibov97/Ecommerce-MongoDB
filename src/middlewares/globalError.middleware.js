@@ -22,6 +22,9 @@ const sendErrorProd = (err, res) => {
 };
 
 const globalErrorMiddleware = (err, req, res, next) => {
+  err.statusCode = err.statusCode || 500;
+  err.status = err.status || 'error';
+
   if (config.nodeENV === 'development') {
     sendErrorDev(err, res);
   } else if (config.nodeENV === 'production') {
