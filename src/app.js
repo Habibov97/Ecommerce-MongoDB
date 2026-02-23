@@ -5,17 +5,19 @@ const path = require('path');
 const dbConnect = require('./config/database');
 const globalErrorMiddleware = require('./middlewares/globalError.middleware');
 const router = require('./routes/index');
-const uploadRouter = require('./routes/upload.router');
 
 const app = express();
 
 app.use(express.json());
 app.use(cors());
+
 const publicPath = path.join(__dirname, '../public');
 app.use(express.static(publicPath));
 
+const uploadPath = path.join(__dirname, '../uploads');
+app.use('/uploads', express.static(uploadPath));
+
 app.use('/api', router);
-app.use('/api/upload', uploadRouter);
 
 app.use((req, res) => {
   res.json({ message: `inserted url is invalid: ${req.originalUrl}` });

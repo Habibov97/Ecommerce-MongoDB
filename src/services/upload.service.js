@@ -1,6 +1,13 @@
-const fs = require('fs/promises');
+const imageModel = require('../models/image.model');
 
-const uploadImage = (file) => {};
+const uploadImage = async (file) => {
+  let filename = file.filename;
+  let image = new imageModel({
+    url: `/uploads/${filename}`,
+  });
+  await image.save();
+  return image;
+};
 
 const uploadServices = {
   uploadImage,

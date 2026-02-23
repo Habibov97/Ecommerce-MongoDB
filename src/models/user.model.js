@@ -30,9 +30,11 @@ const userSchema = new mongoose.Schema(
       enum: ['admin', 'user'],
       default: 'user',
     },
-    // profileImg: {
-    //   type: String,
-    // },
+    avatar: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Image',
+      default: null,
+    },
   },
   { timestamps: true },
 );

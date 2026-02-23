@@ -8,6 +8,8 @@ const uploadImage = async (req, res, next) => {
   res.json(result);
 };
 
-const uploadController = {};
+const uploadController = {
+  uploadImage,
+};
 
 module.exports = uploadController;
