@@ -18,7 +18,9 @@
     "joi": "^18.0.2",
     "jsonwebtoken": "^9.0.3",
     "libphonenumber-js": "^1.12.37",
-    "mongoose": "^9.2.1"
+    "mongoose": "^9.2.1",
+    "multer": "^2.0.2",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.11"
