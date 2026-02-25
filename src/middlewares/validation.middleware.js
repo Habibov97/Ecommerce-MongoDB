@@ -1,9 +1,18 @@
 const AppError = require('../utils/appError');
 
-const validationMiddleware = (schema) => {
+const validationMiddleware = (schema, source = 'body') => {
   return (req, res, next) => {
-    const result = schema?.validate(req.body);
-    if (result.error) return next(new AppError(result.error?.details?.[0]?.message, 400));
+    const payload = source === 'body' ? req.body : req.query;
+
+    const validation = schema?.validate(payload);
+
+    if (validation.error) return next(new AppError(validation.error?.details?.[0]?.message, 400));
+
+    if (source === 'body') {
+      req.body = validation.value;
+    } else {
+      req.validationQuery = validation.value;
+    }
 
     next();
   };

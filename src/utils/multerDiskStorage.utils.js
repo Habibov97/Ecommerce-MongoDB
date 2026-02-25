@@ -4,7 +4,7 @@ const path = require('path');
 const AppError = require('./appError');
 
 const uploadFolderPath = path.join(__dirname, '../../uploads');
-const allowedTypes = ['image/jpeg', 'image/webp', 'image/png', 'image/jpg', 'image/gif'];
+const allowedTypes = ['image/jpeg', 'image/webp', 'image/png', 'image/gif'];
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {

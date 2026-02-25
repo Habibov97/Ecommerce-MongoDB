@@ -5,8 +5,6 @@ const roleMiddleware = (...roles) => {
     if (roles.includes(req.user.role)) return next();
 
     next(new AppError('Forbidden', 403));
-
-    next();
   };
 };
 
