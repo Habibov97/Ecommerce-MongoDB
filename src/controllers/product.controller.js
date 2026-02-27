@@ -27,6 +27,15 @@ const update = async (req, res, next) => {
   }
 };
 
+const upsertVariant = async (req, res, next) => {
+  try {
+    const result = await productService.upsertVariant(req.params.id, req.body);
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const remove = async (req, res, next) => {
   try {
     const result = await productService.delete(req.params.id);
@@ -40,6 +49,7 @@ const productController = {
   list,
   create,
   update,
+  upsertVariant,
   remove,
 };
 

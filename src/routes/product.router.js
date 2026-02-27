@@ -18,7 +18,15 @@ productRouter
 productRouter
   .route('/:id')
   .get(() => {})
-  .post(authMiddleware, roleMiddleware('admin'), () => {})
+  .post(authMiddleware, roleMiddleware('admin'), productController.update)
   .delete(authMiddleware, roleMiddleware('admin'), () => {});
+productRouter
+  .route('/:id/variant')
+  .post(
+    authMiddleware,
+    roleMiddleware('admin'),
+    validationMiddleware(productValidation.upsertVariant, 'body'),
+    productController.upsertVariant,
+  );
 
 module.exports = productRouter;

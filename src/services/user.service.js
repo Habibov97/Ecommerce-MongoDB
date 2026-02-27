@@ -13,7 +13,6 @@ const updateProfile = async (id, params) => {
     user.avatar = image._id;
 
     delete params.avatar;
-    console.log(params);
   }
 
   for (let [key, value] of Object.entries(params)) {
