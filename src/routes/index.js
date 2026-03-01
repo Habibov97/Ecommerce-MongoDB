@@ -12,5 +12,6 @@ router.use('/user', authMiddleware, userRouter);
 router.use('/category', categoryRouter);
 router.use('/upload', uploadRouter);
 router.use('/product', productRouter);
+router.use('/order', authMiddleware, require('./order.router'));
 
 module.exports = router;

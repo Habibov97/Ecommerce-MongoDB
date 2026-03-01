@@ -1,20 +1,44 @@
-const productModel = require('../models/product.model');
+const { productModel } = require('../models/product.model');
 const generateSlug = require('../utils/slug.utils');
+const AppError = require('../utils/appError');
+
 const productList = async (filter = {}) => {
   let query = productModel.find();
 
   if (filter.categories) {
     query = query.where('categories').in(filter.categories);
   }
-  if (filter.minPrice) {
-    query = query.where('variants.price').gte(filter.minPrice);
-  }
-  if (filter.maxPrice) {
-    query = query.where('variants.price').lte(filter.maxPrice);
+
+  if (filter.search) {
+    query = query.and([
+      {
+        $or: [
+          { title: { $regex: filter.search, $options: 'i' } },
+          { description: { $regex: filter.search, $options: 'i' } },
+        ],
+      },
+    ]);
   }
 
-  if (filter.color) {
-    query = query.where('variants.specs.color').equals(filter.color);
+  for (let [key, value] of Object.entries(filter)) {
+    if (['categories', 'page', 'limit', 'search'].includes(key)) continue;
+    if (value[0] === '[') {
+      let [min, max] = value
+        .slice(1, -1)
+        .split(',')
+        .map((item) => +item.trim());
+
+      if (min) query = query.where(`variants.${key}`).gte(min);
+      if (max) query = query.where(`variants.${key}`).lte(max);
+    } else if (value[0] === '<') {
+      query = query.where(`variants.${key}`).lte(value.slice(1));
+    } else if (value[0] === '>') {
+      query = query.where(`variants.${key}`).gte(value.slice(1));
+    } else if (value.includes(',')) {
+      query = query.where(`variants.${key}`).in(value.split(',').map((item) => item.trim()));
+    } else {
+      query = query.where(`variants.${key}`).equals(value);
+    }
   }
 
   const limit = filter.limit || 10;
@@ -45,15 +69,22 @@ const upsertVariant = async (id, params) => {
   const product = await productModel.findById(id);
   if (!product) throw new AppError('Product is not found', 404);
 
-  product.variants = product.variants || [];
+  for (let [key, value] of Object.entries(params.specs)) {
+    let productSpec = product.specs.find((spec) => spec.key === key);
+    if (!productSpec) throw new AppError(`${key} speciality is not exists in product`, 404);
 
+    let productSpecItem = productSpec.values.find((item) => item.key === value);
+    if (!productSpecItem) throw new AppError(`${value} is not found in ${key} speciality`, 404);
+  }
+
+  product.variants = product.variants || [];
   const { variants } = product;
 
   const variant = variants.find((variant) => {
-    let checkSpec = Object.entries(variant.specs).some(([key, value]) => {
-      return params.specs[key] !== value;
+    let checkSpec = Object.entries(Object.fromEntries(variant.specs)).every(([key, value]) => {
+      return params.specs[key] === value;
     });
-    return checkSpec === false;
+    return checkSpec;
   });
 
   params.slug = params.slug || variant?.slug || generateSlug(`${Object.values(params.specs).join('-')}`);

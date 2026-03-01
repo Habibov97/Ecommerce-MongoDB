@@ -14,11 +14,14 @@ const list = Joi.object({
     })
     .message('Category ids are not valid'),
   // .required(),
-  minPrice: Joi.number().min(1),
-  maxPrice: Joi.number()
-    .min(1)
-    .when('minPrice', { is: Joi.exist(), then: Joi.number().greater(Joi.ref('minPrice')) }),
-  color: Joi.string(),
+  price: Joi.string().optional(),
+  size: Joi.string().optional(),
+  search: Joi.string().optional(),
+  'specs.color': Joi.string(),
+  // minPrice: Joi.number().min(1),
+  // maxPrice: Joi.number()
+  //   .min(1)
+  //   .when('minPrice', { is: Joi.exist(), then: Joi.number().greater(Joi.ref('minPrice')) }),
 }).concat(pageValidation);
 
 const create = Joi.object({
